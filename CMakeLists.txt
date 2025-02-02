@@ -1,43 +1,40 @@
-cmake_minimum_required(VERSION 3.30)
-project(unit_test)
+cmake_minimum_required(VERSION 3.10)
+project(MathLib)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCES
-        main.cpp
-        MyMathLib.h
-)
-
-
-add_executable(unit_test main.cpp)
-
-# Opciones
-option(ENABLE_TESTING "Enable a Unit Testing build." ON)
-
-# Descarga GoogleTest usando FetchContent
+# Google Test requires at least C++14
 include(FetchContent)
 FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.11.0
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
 )
 FetchContent_MakeAvailable(googletest)
 
-# Si se habilitan las pruebas, agrega GoogleTest y las pruebas unitarias
-if(ENABLE_TESTING)
-    enable_testing()
+# Main library
+add_library(mathlib
+        MyMathLib.h
+        BasicMathOps.h
+        AdvancedMathOpsTest.h
+)
+set_target_properties(mathlib PROPERTIES LINKER_LANGUAGE CXX)
 
-    # Archivos de pruebas
-    set(TEST_SOURCES
-        test.cpp
-    )
+# Main executable
+add_executable(MathLib main.cpp)
+target_link_libraries(MathLib mathlib)
 
-    # Crear ejecutable de pruebas
-    add_executable(test_suite ${TEST_SOURCES})
+# Enable testing
+enable_testing()
 
-    # Enlazar GoogleTest
-    target_link_libraries(test_suite PRIVATE gtest gtest_main)
+# Test executables
+add_executable(basic_math_test tests/BasicMathOpsTest.cpp)
+target_link_libraries(basic_math_test GTest::gtest_main mathlib)
 
-    # Registrar pruebas con CTest
-    add_test(NAME AllTests COMMAND test_suite)
-endif()
+add_executable(advanced_math_test tests/AdvancedMathOpsTest.cpp)
+target_link_libraries(advanced_math_test GTest::gtest_main mathlib)
+
+# Register tests
+include(GoogleTest)
+gtest_discover_tests(basic_math_test)
+gtest_discover_tests(advanced_math_test)
