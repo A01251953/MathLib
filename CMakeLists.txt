@@ -12,26 +12,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Add source files
-set(SOURCE_FILES
-        MyMathLib.h
-        BasicMathOps.h
-        AdvancedMathOps.h
-        main.cpp
-)
+# Create library target
+add_library(mathlib INTERFACE)
+target_include_directories(mathlib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Main executable
-add_executable(MathLib ${SOURCE_FILES})
+add_executable(MathLib main.cpp)
+target_link_libraries(MathLib PRIVATE mathlib)
 
 # Enable testing
 enable_testing()
 
 # Test executables
 add_executable(basic_math_test tests/BasicMathOpsTest.cpp)
-target_link_libraries(basic_math_test GTest::gtest_main)
+target_link_libraries(basic_math_test PRIVATE GTest::gtest_main mathlib)
 
 add_executable(advanced_math_test tests/AdvancedMathOpsTest.cpp)
-target_link_libraries(advanced_math_test GTest::gtest_main)
+target_link_libraries(advanced_math_test PRIVATE GTest::gtest_main mathlib)
 
 # Register tests
 include(GoogleTest)
