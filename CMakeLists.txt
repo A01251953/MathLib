@@ -12,27 +12,26 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Main library
-add_library(mathlib
+# Add source files
+set(SOURCE_FILES
         MyMathLib.h
         BasicMathOps.h
-        AdvancedMathOpsTest.h
+        AdvancedMathOps.h
+        main.cpp
 )
-set_target_properties(mathlib PROPERTIES LINKER_LANGUAGE CXX)
 
 # Main executable
-add_executable(MathLib main.cpp)
-target_link_libraries(MathLib mathlib)
+add_executable(MathLib ${SOURCE_FILES})
 
 # Enable testing
 enable_testing()
 
 # Test executables
 add_executable(basic_math_test tests/BasicMathOpsTest.cpp)
-target_link_libraries(basic_math_test GTest::gtest_main mathlib)
+target_link_libraries(basic_math_test GTest::gtest_main)
 
 add_executable(advanced_math_test tests/AdvancedMathOpsTest.cpp)
-target_link_libraries(advanced_math_test GTest::gtest_main mathlib)
+target_link_libraries(advanced_math_test GTest::gtest_main)
 
 # Register tests
 include(GoogleTest)
